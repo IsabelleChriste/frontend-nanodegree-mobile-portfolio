@@ -486,7 +486,7 @@ function logAverageFrame(times) { // times is the array of User Timing measureme
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
-function updatePositions() {
+/*function updatePositions() {
     frame++;
     window.performance.mark('mark_start_frame');
 
@@ -494,7 +494,10 @@ function updatePositions() {
     var beforephase = document.body.scrollTop / 1250;
     for (var i = 0; i < items.length; i++) {
         //console.log(phase, document.body.scrollTop / 1250)
-        var phase = Math.sin(beforephase + (i % 5));
+        var randomnumber = [0, 1, 2, 3, 4];
+        var randomthing = i % 5;
+        var phase = Math.sin(beforephase + randomthing);
+        console.log(phase);
         items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
 
     }
@@ -508,7 +511,42 @@ function updatePositions() {
         logAverageFrame(timesToUpdatePosition);
     }
 }
+*/
+function updatePositions() {
+    frame++;
+    window.performance.mark('mark_start_frame');
 
+    var items = document.getElementsByClassName('mover');
+    var allThePizza = items;
+    //var beforephase = document.body.scrollTop / 1250;
+    var phasea = Math.sin(document.body.scrollTop / 1250);
+    var phaseb = Math.sin(document.body.scrollTop / 1250 + 1);
+    var phasec = Math.sin(document.body.scrollTop / 1250 + 2);
+    var phased = Math.sin(document.body.scrollTop / 1250 + 3);
+    var phasee = Math.sin(document.body.scrollTop / 1250 + 4);
+    var phaselist = ["phasea", "phaseb","phasec","phased","phasee"]
+    for (var i = 0; i < allThePizza.length; i++) {
+        for (var h = 0; h < phaselist.length;h++){
+            if (i % 5 == 0){var phase = phasea};
+            if (i % 5 == 1){var phase = phaseb};
+            if (i % 5 == 2){var phase = phasec};
+            if (i % 5 == 3){var phase = phased};
+            if (i % 5 == 4){var phase = phasee};
+        }
+        allThePizza[i].style.left = allThePizza[i].basicLeft + 100 * phase + 'px';
+    //var pizzagalore = allThePizza[i].style.left;
+    //pizzagalore = items[i].basicLeft + 100 * phase + 'px';
+    allThePizza[i].style.transform = 'translateX(' + allThePizza[i].style.left + ')';
+    }
+    // User Timing API to the rescue again. Seriously, it's worth learning.
+    // Super easy to create custom metrics.
+    window.performance.mark('mark_end_frame');
+    window.performance.measure('measure_frame_duration', 'mark_start_frame', 'mark_end_frame');
+    if (frame % 10 === 0) {
+        var timesToUpdatePosition = window.performance.getEntriesByName('measure_frame_duration');
+        logAverageFrame(timesToUpdatePosition);
+    }
+}
 // runs updatePositions on scroll
 window.addEventListener('scroll', updatePositions);
 
@@ -519,12 +557,11 @@ document.addEventListener('DOMContentLoaded', function () {
     for (var i = 0; i < 24; i++) {
         var elem = document.createElement('img');
         elem.className = 'mover';
-        elem.src = 'images/pizza.png';
+        elem.src = 'images/pizzaoptim.png';
         elem.style.height = '100px';
         elem.style.width = '73.333px';
         elem.basicLeft = (i % cols) * s;
         elem.style.top = (Math.floor(i / cols) * s) + 'px';
         document.querySelector('#movingPizzas1').appendChild(elem);
     }
-    updatePositions();
 });
